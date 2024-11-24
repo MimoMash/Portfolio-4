@@ -5,6 +5,7 @@ import * as CONST from "./constants.mjs";
 
 
 const startingLevel = CONST.START_LEVEL_ID;
+const aSharpPlace = CONST.A_SHARP_PLACE_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -29,6 +30,7 @@ let pallet = {
     "H": ANSI.COLOR.RED,
     "$": ANSI.COLOR.YELLOW,
     "B": ANSI.COLOR.GREEN,
+    "D": ANSI.COLOR.BLACK
 }
 
 
@@ -42,12 +44,13 @@ let playerPos = {
 const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$"
+const DOOR = "D";
 
 let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY];
+const THINGS = [LOOT, EMPTY, DOOR];
 
 let eventText = "";
 
@@ -55,7 +58,7 @@ const HP_MAX = 10;
 
 const playerStats = {
     hp: 8,
-    chash: 0
+    cash: 0
 }
 
 class Labyrinth {
@@ -100,8 +103,13 @@ class Labyrinth {
             let currentItem = level[tRow][tcol];
             if (currentItem == LOOT) {
                 let loot = Math.round(Math.random() * 7) + 3;
-                playerStats.chash += loot;
+                playerStats.cash += loot;
                 eventText = `Player gained ${loot}$`;
+            }
+
+            if (currentItem == DOOR) {
+                levelData = readMapFile(levels[aSharpPlace]);
+                level = levelData;
             }
 
             // Move the HERO
@@ -156,7 +164,7 @@ class Labyrinth {
 
 function renderHud() {
     let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, "♥︎") + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(HP_MAX - playerStats.hp, "♥︎") + ANSI.COLOR_RESET}]`
-    let cash = `$:${playerStats.chash}`;
+    let cash = `$:${playerStats.cash}`;
     return `${hpBar} ${cash}\n`;
 }
 
