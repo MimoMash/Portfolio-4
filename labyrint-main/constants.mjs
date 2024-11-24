@@ -7,6 +7,7 @@ const DATA_DIR = "./data/";
 
 // Game spesific constants.
 const START_LEVEL_ID = "start"
+const A_SHARP_PLACE_LEVEL_ID = "aSharpPlace"
 
 
 // Scalar constants 
@@ -14,4 +15,4 @@ const NEWLINE = "\n";
 
 
 
-export { LEVEL_LISTING_FILE, MAP_DIRECTORY, NEWLINE, DATA_DIR, START_LEVEL_ID }
+export { LEVEL_LISTING_FILE, MAP_DIRECTORY, NEWLINE, DATA_DIR, START_LEVEL_ID, A_SHARP_PLACE_LEVEL_ID }
