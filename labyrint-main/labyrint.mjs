@@ -6,6 +6,7 @@ import * as CONST from "./constants.mjs";
 
 const startingLevel = CONST.START_LEVEL_ID;
 const aSharpPlace = CONST.A_SHARP_PLACE_LEVEL_ID;
+const aScaryPlace = CONST.A_SCARY_PLACE_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -27,10 +28,12 @@ let level = levelData;
 
 let pallet = {
     "█": ANSI.COLOR.LIGHT_GRAY,
-    "H": ANSI.COLOR.RED,
-    "$": ANSI.COLOR.YELLOW,
-    "B": ANSI.COLOR.GREEN,
-    "D": ANSI.COLOR.BLACK
+    "ⶆ": ANSI.COLOR.YELLOW,
+    "$": ANSI.COLOR.GREEN,
+    "B": ANSI.COLOR.RED,
+    "⚀": ANSI.COLOR.BLUE,
+    "⚁": ANSI.COLOR.BLUE,
+    "⚂": ANSI.COLOR.BLUE
 }
 
 let isDirty = true;
@@ -41,15 +44,19 @@ let playerPos = {
 }
 
 const EMPTY = " ";
-const HERO = "H";
+const HERO = "ⶆ";
 const LOOT = "$"
-const DOOR = "D";
+const DOORS = {
+    start: "⚀",
+    aSharpPlace: "⚁",
+    aScaryPlace: "⚂"
+}
 
 let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY, DOOR];
+const THINGS = [LOOT, EMPTY, DOORS.aSharpPlace, DOORS.aScaryPlace, DOORS.start];
 
 let eventText = "";
 
@@ -106,8 +113,14 @@ class Labyrinth {
                 eventText = `Player gained ${loot}$`;
             }
 
-            if (currentItem == DOOR) {
+            if (currentItem == DOORS.aSharpPlace) {
                 levelData = readMapFile(levels[aSharpPlace]);
+                level = levelData;
+                resetPlayerPosition();
+            }
+
+            if (currentItem == DOORS.aScaryPlace) {
+                levelData = readMapFile(levels[aScaryPlace]);
                 level = levelData;
                 resetPlayerPosition();
             }
@@ -163,7 +176,7 @@ class Labyrinth {
 
 function renderHud() {
     let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, "♥︎") + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(HP_MAX - playerStats.hp, "♥︎") + ANSI.COLOR_RESET}]`
-    let cash = `$:${playerStats.cash}`;
+    let cash = `${ANSI.COLOR.GREEN + "$" + ANSI.COLOR_RESET}:${playerStats.cash}`;
     return `${hpBar} ${cash}\n`;
 }
 
@@ -179,7 +192,7 @@ function findHeroOnMap() {
     if (playerPos.row == null) {
         for (let row = 0; row < level.length; row++) {
             for (let col = 0; col < level[row].length; col++) {
-                if (level[row][col] == "H") {
+                if (level[row][col] == HERO) {
                     playerPos.row = row;
                     playerPos.col = col;
                     break;
