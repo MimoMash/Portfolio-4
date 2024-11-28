@@ -33,7 +33,8 @@ let pallet = {
     "B": ANSI.COLOR.RED,
     "⚀": ANSI.COLOR.BLUE,
     "⚁": ANSI.COLOR.BLUE,
-    "⚂": ANSI.COLOR.BLUE
+    "⚂": ANSI.COLOR.BLUE,
+    "⛗": ANSI.COLOR.BLACK,
 }
 
 let isDirty = true;
@@ -45,7 +46,8 @@ let playerPos = {
 
 const EMPTY = " ";
 const HERO = "ⶆ";
-const LOOT = "$"
+const LOOT = "$";
+const TELEPORT = "⛗";
 const DOORS = {
     start: "⚀",
     aSharpPlace: "⚁",
@@ -57,7 +59,7 @@ let direction = -1;
 let items = [];
 
 const THINGS = [LOOT, EMPTY, DOORS.aSharpPlace, DOORS.aScaryPlace, DOORS.start];
-
+const TELEPORTER= [TELEPORT]
 let eventText = "";
 
 const HP_MAX = 10;
@@ -103,10 +105,11 @@ class Labyrinth {
             tRow = playerPos.row + (1 * dRow);
             tCol = playerPos.col + (1 * dCol);
         }
+
         
         if (THINGS.includes(level[tRow][tCol])) { // Is there anything where Hero is moving to
-
             let currentItem = level[tRow][tCol];
+            
             if (currentItem == LOOT) {
                 let loot = Math.round(Math.random() * 7) + 3;
                 playerStats.cash += loot;
@@ -138,6 +141,35 @@ class Labyrinth {
         } else {
             direction *= -1;
         }
+
+        if (TELEPORTER.includes(level[tRow][tCol])) {
+            let currentItem = level[tRow][tCol];
+            
+            if (currentItem == TELEPORT) {
+                teleportPlayer();
+            }
+            isDirty = true;
+        }
+
+        function teleportPlayer() {
+            level[playerPos.row][playerPos.col] = EMPTY;
+            level[tRow][tCol] = EMPTY;
+            playerPos.row = null;
+            for (let row = 0; row < level.length; row++) {
+                for (let col = 0; col < level[row].length; col++) {
+                    if (level[row][col] == TELEPORT) {
+                        level[row][col] = HERO;
+                        playerPos.row = row;
+                        playerPos.col = col;
+                        break;
+                    }
+                }
+                if (playerPos.row != undefined) {
+                    break;
+                }
+            }
+        }
+
     }
     draw() {
 
@@ -204,4 +236,5 @@ function findHeroOnMap() {
         }
     }
 }
+
 export default Labyrinth;
