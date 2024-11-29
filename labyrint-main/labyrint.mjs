@@ -222,22 +222,25 @@ class Labyrinth {
         let xRow = 0;
         let xCol = 0;
 
-        xRow = 1;
-        xCol = -1;
-
+        for (let row = 0; row < 2; row++) {
+            xRow = row;
+            
+        }
+        
         let nRow = NPCPos.row + (1 * xRow)
         let nCol = NPCPos.col + (1 * xCol);
 
-            if (ENEMY_THINGS.includes(level[nRow][nCol])) {
-                level[NPCPos.row][NPCPos.col] = EMPTY;
-                level[nRow][nCol] = NPC;
 
-                NPCPos.row = nRow;
-                NPCPos.col = nCol;
+        if (ENEMY_THINGS.includes(level[nRow][nCol])) {
+            level[NPCPos.row][NPCPos.col] = EMPTY;
+            level[nRow][nCol] = NPC;
 
-                isDirty = true;
-            }
+            NPCPos.row = nRow;
+            NPCPos.col = nCol;  
+            isDirty = true;       
+        }
         
+
     }
 
     draw() {
