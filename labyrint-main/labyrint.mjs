@@ -35,6 +35,7 @@ let pallet = {
     "⚁": ANSI.COLOR.BLUE,
     "⚂": ANSI.COLOR.BLUE,
     "⛗": ANSI.COLOR.BLACK,
+    "X": ANSI.COLOR.RED
 }
 
 let isDirty = true;
@@ -184,72 +185,74 @@ class Labyrinth {
 
         findNPCOnMap();
 
-        let xRow = 0;
-        let xCol = 0;
-
-        function NPCPatrolRow() {
-            if (patrolCount == 8) {
-                patrolCount = 0;
-                fullPatrolRow = true;
-                return;
-            }
-            if (amountOfPatrolsRow <= maxPatrol && !isPatrolLimitReachedRow) {
-                xRow--
-                amountOfPatrolsRow++
-                if (amountOfPatrolsRow == maxPatrol)
-                    isPatrolLimitReachedRow = true;
-            } else if (amountOfPatrolsRow >= minPatrol && isPatrolLimitReachedRow) {
-                xRow++
-                amountOfPatrolsRow--
-                if (amountOfPatrolsRow == minPatrol)
-                    isPatrolLimitReachedRow = false;
-            } 
-            patrolCount++;
-        }
-
-        function NPCPatrolCol() {
-            if (patrolCount == 8) {
-                patrolCount = 0;
-                fullPatrolRow = false;
-                return;
-            }
-            if (amountOfPatrolsCol <= maxPatrol && !isPatrolLimitReachedCol) {
-                xCol--
-                amountOfPatrolsCol++
-                if (amountOfPatrolsCol == maxPatrol)
-                    isPatrolLimitReachedCol = true;
-            } else if (amountOfPatrolsCol >= minPatrol && isPatrolLimitReachedCol) {
-                xCol++
-                amountOfPatrolsCol--
-                if (amountOfPatrolsCol == minPatrol)
-                    isPatrolLimitReachedCol = false;
-            }   
-            patrolCount++;
-        }
-        
-        if (fullPatrolRow == false) {
-            NPCPatrolRow();
-        } else {
-            NPCPatrolCol();
-        }
-
-    
-        for (let i = 0; i < NPCPositions.length; i++) {
-            let currentNPC = NPCPositions[i];
+        function updateNPCMovement() {
             
-            let nRow = currentNPC.NPCPosRow + xRow;
-            let nCol = currentNPC.NPCPosCol + xCol;
-            
-            if (ENEMY_THINGS.includes(level[nRow][nCol])) {
-                
-                level[currentNPC.NPCPosRow][currentNPC.NPCPosCol] = EMPTY;
-                level[nRow][nCol] = NPC;
-                
-                NPCPositions[i] = { NPCPosRow: nRow, NPCPosCol: nCol };
+            for (let i = 0; i < NPCPositions.length; i++) {
+                let currentNPC = NPCPositions[i];
         
-                isDirty = true;
+                let xRow = 0;
+                let xCol = 0;
+
+                function NPCPatrolRow() {
+                    if (patrolCount == 8) {
+                        patrolCount = 0;
+                        fullPatrolRow = true;
+                        return;
+                    }
+                    if (amountOfPatrolsRow <= maxPatrol && !isPatrolLimitReachedRow) {
+                        xRow--
+                        amountOfPatrolsRow++
+                        if (amountOfPatrolsRow == maxPatrol)
+                            isPatrolLimitReachedRow = true;
+                    } else if (amountOfPatrolsRow >= minPatrol && isPatrolLimitReachedRow) {
+                        xRow++
+                        amountOfPatrolsRow--
+                        if (amountOfPatrolsRow == minPatrol)
+                            isPatrolLimitReachedRow = false;
+                    } 
+                    patrolCount++;
+                }
+        
+                function NPCPatrolCol() {
+                    if (patrolCount == 8) {
+                        patrolCount = 0;
+                        fullPatrolRow = false;
+                        return;
+                    }
+                    if (amountOfPatrolsCol <= maxPatrol && !isPatrolLimitReachedCol) {
+                        xCol--
+                        amountOfPatrolsCol++
+                        if (amountOfPatrolsCol == maxPatrol)
+                            isPatrolLimitReachedCol = true;
+                    } else if (amountOfPatrolsCol >= minPatrol && isPatrolLimitReachedCol) {
+                        xCol++
+                        amountOfPatrolsCol--
+                        if (amountOfPatrolsCol == minPatrol)
+                            isPatrolLimitReachedCol = false;
+                    }   
+                    patrolCount++;
+                }
+        
+                if (!fullPatrolRow) {
+                    NPCPatrolRow();
+                } else {
+                    NPCPatrolCol();
+                }
+        
+                let nRow = currentNPC.NPCPosRow + xRow;
+                let nCol = currentNPC.NPCPosCol + xCol;
+        
+                if (ENEMY_THINGS.includes(level[nRow][nCol])) {
+                    level[currentNPC.NPCPosRow][currentNPC.NPCPosCol] = EMPTY;
+                    level[nRow][nCol] = NPC;
+        
+                    NPCPositions[i] = { NPCPosRow: nRow, NPCPosCol: nCol };
+                    isDirty = true;
+                }
             }
         }
+
+        updateNPCMovement();
 
     if (LEVEL_DOORS.includes(level[tRow][tCol])) {
         let currentDoor = level[tRow][tCol]
