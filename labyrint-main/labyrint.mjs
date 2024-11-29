@@ -98,8 +98,10 @@ function findNPCOnMap() {
 
 const maxPatrol = 4;
 const minPatrol = 0;
-let amountOfPatrols = 2;
-let isPatrolLimitReached = false;
+let amountOfPatrolsRow = 2;
+let amountOfPatrolsCol = 2;
+let isPatrolLimitReachedRow = false;
+let isPatrolLimitReachedCol = false;
 
 class Labyrinth {
     
@@ -227,17 +229,35 @@ class Labyrinth {
         let xRow = 0;
         let xCol = 0;
 
-        if (amountOfPatrols <= maxPatrol && !isPatrolLimitReached) {
-            xRow--
-            amountOfPatrols++
-            if (amountOfPatrols == maxPatrol)
-                isPatrolLimitReached = true;
-        } else if (amountOfPatrols >= minPatrol && isPatrolLimitReached) {
-            xRow++
-            amountOfPatrols--
-            if (amountOfPatrols == minPatrol)
-                isPatrolLimitReached = false;
+        function NPCPatrolRow() {
+            if (amountOfPatrolsRow <= maxPatrol && !isPatrolLimitReachedRow) {
+                xRow--
+                amountOfPatrolsRow++
+                if (amountOfPatrolsRow == maxPatrol)
+                    isPatrolLimitReachedRow = true;
+            } else if (amountOfPatrolsRow >= minPatrol && isPatrolLimitReachedRow) {
+                xRow++
+                amountOfPatrolsRow--
+                if (amountOfPatrolsRow == minPatrol)
+                    isPatrolLimitReachedRow = false;
+            }
         }
+        function NPCPatrolCol() {
+            if (amountOfPatrolsCol <= maxPatrol && !isPatrolLimitReachedCol) {
+                xCol--
+                amountOfPatrolsCol++
+                if (amountOfPatrolsCol == maxPatrol)
+                    isPatrolLimitReachedCol = true;
+            } else if (amountOfPatrolsCol >= minPatrol && isPatrolLimitReachedCol) {
+                xCol++
+                amountOfPatrolsCol--
+                if (amountOfPatrolsCol == minPatrol)
+                    isPatrolLimitReachedCol = false;
+            }
+        }
+
+        NPCPatrolCol();
+        
 
         let nRow = NPCPos.row + (1 * xRow)
         let nCol = NPCPos.col + (1 * xCol);
