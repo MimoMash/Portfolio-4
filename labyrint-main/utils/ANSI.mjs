@@ -23,6 +23,8 @@ const BLUE = '\x1b[34m';
 const BLACK = '\x1b[30m';
 const WHITE = '\x1b[37m';
 const LIGHT_GRAY = `\u001b[38;5;251m`;
+const CYAN = '\x1b[36m';
+const MAGENTA = '\x1b[35m';
 const COLOR_RESET = '\x1b[0m';
 const BACK_GREEN = '\x1b[42m';
 const BACK_RED = '\x1b[41m';
@@ -61,7 +63,9 @@ const ANSI = {
         BLUE,
         BLACK,
         WHITE,
-        LIGHT_GRAY
+        LIGHT_GRAY, 
+        CYAN,
+        MAGENTA
     },
     BACKGROUND_COLOR: {
         GREEN: BACK_GREEN,
@@ -75,4 +79,4 @@ const ANSI = {
     }
 }
 
-export default ANSI 
+export { ANSI }
