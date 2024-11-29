@@ -7,6 +7,8 @@ import * as CONST from "./constants.mjs";
 const startingLevel = CONST.START_LEVEL_ID;
 const aSharpPlace = CONST.A_SHARP_PLACE_LEVEL_ID;
 const aScaryPlace = CONST.A_SCARY_PLACE_LEVEL_ID;
+const aSharpPlaceReentry = CONST.A_SHARP_PLACE_REENTRY_LEVEL_ID;
+const startingLevelReentry = CONST.START_REENTRY_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -122,7 +124,7 @@ class Labyrinth {
             tCol = playerPos.col + (1 * dCol);
         }   
     
-        if (THINGS.includes(level[tRow][tCol])) { 
+       if (THINGS.includes(level[tRow][tCol])) { 
             let currentItem = level[tRow][tCol];
             
             if (currentItem == LOOT) {
@@ -131,7 +133,7 @@ class Labyrinth {
                 eventText = `Player gained ${loot}$`;
             }
 
-            if (levelChange == true) {
+            if (levelChange == true) { 
                 level[playerPos.row][playerPos.col] = DOORS[previousLevel];
                 level[tRow][tCol] = HERO;
                 
