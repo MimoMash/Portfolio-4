@@ -7,8 +7,8 @@ import * as CONST from "./constants.mjs";
 const startingLevel = CONST.START_LEVEL_ID;
 const aSharpPlace = CONST.A_SHARP_PLACE_LEVEL_ID;
 const aScaryPlace = CONST.A_SCARY_PLACE_LEVEL_ID;
-const aSharpPlaceReentry = CONST.A_SHARP_PLACE_REENTRY_LEVEL_ID;
-const startingLevelReentry = CONST.START_REENTRY_LEVEL_ID;
+const sharp_reentry = CONST.A_SHARP_PLACE_REENTRY_LEVEL_ID;
+const start_reentry = CONST.START_REENTRY_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -36,6 +36,8 @@ let pallet = {
     "⚀": ANSI.COLOR.BLUE,
     "⚁": ANSI.COLOR.BLUE,
     "⚂": ANSI.COLOR.BLUE,
+    "⚃": ANSI.COLOR.BLUE,
+    "⚄": ANSI.COLOR.BLUE,
     "⛗": ANSI.COLOR.BLACK,
     "X": ANSI.COLOR.RED
 }
@@ -53,15 +55,16 @@ const LOOT = "$";
 const NPC = "X";
 const TELEPORT = "⛗";
 const DOORS = {
-    start: "⚀",
     aSharpPlace: "⚁",
-    aScaryPlace: "⚂"
+    aScaryPlace: "⚂",
+    start_reentry: "⚃",
+    sharp_reentry: "⚄"
 }
 
 let direction = -1;
 let levelChange = false;
 let previousLevel = null;
-let currentLevel = startingLevel;
+let currentLevel = start_reentry;
 const maxPatrol = 4;
 const minPatrol = 0;
 let amountOfPatrolsRow = 2;
@@ -77,7 +80,7 @@ let items = [];
 const THINGS = [LOOT, EMPTY];
 const ENEMY_THINGS = [EMPTY];
 const TELEPORTER = [TELEPORT];
-const LEVEL_DOORS = [DOORS.start, DOORS.aSharpPlace, DOORS.aScaryPlace]
+const LEVEL_DOORS = [DOORS.start, DOORS.aSharpPlace, DOORS.aScaryPlace, DOORS.sharp_reentry, DOORS.start_reentry]
 let eventText = "";
 
 const HP_MAX = 10;
@@ -258,8 +261,9 @@ class Labyrinth {
 
     if (LEVEL_DOORS.includes(level[tRow][tCol])) {
         let currentDoor = level[tRow][tCol]
-        
-            levelChanger(startingLevel);
+
+
+            levelChanger(start_reentry);
         
             levelChanger(aSharpPlace);
 
