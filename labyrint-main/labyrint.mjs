@@ -102,6 +102,8 @@ let amountOfPatrolsRow = 2;
 let amountOfPatrolsCol = 2;
 let isPatrolLimitReachedRow = false;
 let isPatrolLimitReachedCol = false;
+let fullPatrolRow = false;
+let patrolCount = 0;
 
 class Labyrinth {
     
@@ -230,34 +232,52 @@ class Labyrinth {
         let xCol = 0;
 
         function NPCPatrolRow() {
+            if (patrolCount == 8) {
+                patrolCount = 0;
+                fullPatrolRow = true;
+                return;
+            }
             if (amountOfPatrolsRow <= maxPatrol && !isPatrolLimitReachedRow) {
                 xRow--
                 amountOfPatrolsRow++
+                patrolCount++
                 if (amountOfPatrolsRow == maxPatrol)
                     isPatrolLimitReachedRow = true;
             } else if (amountOfPatrolsRow >= minPatrol && isPatrolLimitReachedRow) {
                 xRow++
                 amountOfPatrolsRow--
+                patrolCount++
                 if (amountOfPatrolsRow == minPatrol)
                     isPatrolLimitReachedRow = false;
-            }
+            } 
         }
+
         function NPCPatrolCol() {
+            if (patrolCount == 8) {
+                patrolCount = 0;
+                fullPatrolRow = false;
+                return;
+            }
             if (amountOfPatrolsCol <= maxPatrol && !isPatrolLimitReachedCol) {
                 xCol--
                 amountOfPatrolsCol++
+                patrolCount++
                 if (amountOfPatrolsCol == maxPatrol)
                     isPatrolLimitReachedCol = true;
             } else if (amountOfPatrolsCol >= minPatrol && isPatrolLimitReachedCol) {
                 xCol++
                 amountOfPatrolsCol--
+                patrolCount++
                 if (amountOfPatrolsCol == minPatrol)
                     isPatrolLimitReachedCol = false;
-            }
+            }   
         }
-
-        NPCPatrolCol();
         
+        if (fullPatrolRow == false) {
+            NPCPatrolRow();
+        } else {
+            NPCPatrolCol();
+        }
 
         let nRow = NPCPos.row + (1 * xRow)
         let nCol = NPCPos.col + (1 * xCol);
@@ -271,7 +291,6 @@ class Labyrinth {
             NPCPos.col = nCol;  
             isDirty = true;       
         }
-        
 
     }
 
@@ -283,6 +302,7 @@ class Labyrinth {
         isDirty = false;
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
+        console.log(patrolCount);
         
         let rendering = "";
 
