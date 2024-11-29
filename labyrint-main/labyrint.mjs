@@ -96,6 +96,11 @@ function findNPCOnMap() {
     }
 }
 
+const maxPatrol = 4;
+const minPatrol = 0;
+let amountOfPatrols = 2;
+let isPatrolLimitReached = false;
+
 class Labyrinth {
     
     update() {
@@ -222,11 +227,18 @@ class Labyrinth {
         let xRow = 0;
         let xCol = 0;
 
-        for (let row = 0; row < 2; row++) {
-            xRow = row;
-            
+        if (amountOfPatrols <= maxPatrol && !isPatrolLimitReached) {
+            xRow--
+            amountOfPatrols++
+            if (amountOfPatrols == maxPatrol)
+                isPatrolLimitReached = true;
+        } else if (amountOfPatrols >= minPatrol && isPatrolLimitReached) {
+            xRow++
+            amountOfPatrols--
+            if (amountOfPatrols == minPatrol)
+                isPatrolLimitReached = false;
         }
-        
+
         let nRow = NPCPos.row + (1 * xRow)
         let nCol = NPCPos.col + (1 * xCol);
 
