@@ -126,18 +126,17 @@ class Labyrinth {
                 playerPos.row = tRow;
                 playerPos.col = tCol;
                 
-                isDirty = true;    
+                isDirty = true;
                 levelChange = false;
 
             } else {
+                level[playerPos.row][playerPos.col] = EMPTY;
+                level[tRow][tCol] = HERO;
 
-            level[playerPos.row][playerPos.col] = EMPTY;
-            level[tRow][tCol] = HERO;
+                playerPos.row = tRow;
+                playerPos.col = tCol;
 
-            playerPos.row = tRow;
-            playerPos.col = tCol;
-
-            isDirty = true;
+                isDirty = true;
             }
 
         } else {
@@ -147,32 +146,24 @@ class Labyrinth {
         if (LEVEL_DOORS.includes(level[tRow][tCol])) {
             let currentDoor = level[tRow][tCol]
             
-                if (currentDoor == DOORS.start) {
-                    levelData = readMapFile(levels[startingLevel]);
-                    level = levelData;
-                    resetPlayerPosition();
-                    previousLevel = currentLevel;
-                    currentLevel = startingLevel;
-                }
+                levelChanger(startingLevel);
+            
+                levelChanger(aSharpPlace);
 
-                if (currentDoor == DOORS.aSharpPlace) {
-                    levelData = readMapFile(levels[aSharpPlace]);
-                    level = levelData;
-                    resetPlayerPosition();
-                    previousLevel = currentLevel;
-                    currentLevel = aSharpPlace;
-                }
-
-                if (currentDoor == DOORS.aScaryPlace) {
-                    levelData = readMapFile(levels[aScaryPlace]);
-                    level = levelData;
-                    resetPlayerPosition();
-                    previousLevel = currentLevel;
-                    currentLevel = aScaryPlace;
-                }
+                levelChanger(aScaryPlace);
 
                 levelChange = true;
                 isDirty = true;
+
+                function levelChanger(levelName) {
+                    if (currentDoor == DOORS[levelName]) {
+                        levelData = readMapFile(levels[levelName]);
+                        level = levelData;
+                        resetPlayerPosition();
+                        previousLevel = currentLevel;
+                        currentLevel = levelName;
+                    }
+                }
         }
 
         if (TELEPORTER.includes(level[tRow][tCol])) {
