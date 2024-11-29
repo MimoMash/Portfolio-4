@@ -58,8 +58,9 @@ let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY, DOORS.aSharpPlace, DOORS.aScaryPlace, DOORS.start];
-const TELEPORTER= [TELEPORT]
+const THINGS = [LOOT, EMPTY];
+const TELEPORTER = [TELEPORT]
+const LEVEL_DOORS = [DOORS.start, DOORS.aSharpPlace, DOORS.aScaryPlace]
 let eventText = "";
 
 const HP_MAX = 10;
@@ -116,18 +117,9 @@ class Labyrinth {
                 eventText = `Player gained ${loot}$`;
             }
 
-            if (currentItem == DOORS.aSharpPlace) {
-                levelData = readMapFile(levels[aSharpPlace]);
-                level = levelData;
-                resetPlayerPosition();
-            }
+            
 
-            if (currentItem == DOORS.aScaryPlace) {
-                levelData = readMapFile(levels[aScaryPlace]);
-                level = levelData;
-                resetPlayerPosition();
-            }
-
+            
             // Move the HERO
             level[playerPos.row][playerPos.col] = EMPTY;
             level[tRow][tCol] = HERO;
@@ -142,9 +134,28 @@ class Labyrinth {
             direction *= -1;
         }
 
+        if (LEVEL_DOORS.includes(level[tRow][tCol])) {
+            let currentDoor = level[tRow][tCol]
+
+                if (currentDoor == DOORS.aSharpPlace) {
+                    levelData = readMapFile(levels[aSharpPlace]);
+                    level = levelData;
+                    resetPlayerPosition();
+                    isDirty = true;
+                }
+
+                if (currentDoor == DOORS.aScaryPlace) {
+                    levelData = readMapFile(levels[aScaryPlace]);
+                    level = levelData;
+                    resetPlayerPosition();
+                    isDirty = true;
+                }
+
+        }
+
         if (TELEPORTER.includes(level[tRow][tCol])) {
             let currentItem = level[tRow][tCol];
-            
+
             if (currentItem == TELEPORT) {
                 teleportPlayer();
             }
