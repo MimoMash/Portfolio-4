@@ -1,4 +1,4 @@
-import ANSI from "./utils/ANSI.mjs";
+import { ANSI } from "./utils/ANSI.mjs";
 import KeyBoardManager from "./utils/KeyBoardManager.mjs";
 import { readMapFile, readRecordFile } from "./utils/fileHelpers.mjs";
 import * as CONST from "./constants.mjs";
@@ -44,9 +44,15 @@ let playerPos = {
     col: null,
 }
 
+let NPCPos = {
+    row: null,
+    col: null,
+}
+
 const EMPTY = " ";
 const HERO = "ⶆ";
 const LOOT = "$";
+const NPC = "X";
 const TELEPORT = "⛗";
 const DOORS = {
     start: "⚀",
@@ -61,6 +67,7 @@ let currentLevel = startingLevel;
 let items = [];
 
 const THINGS = [LOOT, EMPTY];
+const ENEMY_THINGS = [EMPTY];
 const TELEPORTER = [TELEPORT]
 const LEVEL_DOORS = [DOORS.start, DOORS.aSharpPlace, DOORS.aScaryPlace]
 let eventText = "";
@@ -72,15 +79,31 @@ const playerStats = {
     cash: 0
 }
 
-class Labyrinth {
+function findNPCOnMap() {
+    if (NPCPos.row == null) {
+        for (let row = 0; row < level.length; row++) {
+            for (let col = 0; col < level[row].length; col++) {
+                if (level[row][col] == NPC) {
+                    NPCPos.row = row;
+                    NPCPos.col = col;
+                    break;
+                }
+            }
+            if (NPCPos.row != undefined) {
+                break;
+            }
+        }
+    }
+}
 
+class Labyrinth {
+    
     update() {
 
         findHeroOnMap();
 
         let dRow = 0;
         let dCol = 0;
-
         
         if (KeyBoardManager.isUpPressed()) {
             dRow = -1;
@@ -194,7 +217,29 @@ class Labyrinth {
             }
         }
 
+        findNPCOnMap();
+
+        let xRow = 0;
+        let xCol = 0;
+
+        xRow = 1;
+        xCol = -1;
+
+        let nRow = NPCPos.row + (1 * xRow)
+        let nCol = NPCPos.col + (1 * xCol);
+
+            if (ENEMY_THINGS.includes(level[nRow][nCol])) {
+                level[NPCPos.row][NPCPos.col] = EMPTY;
+                level[nRow][nCol] = NPC;
+
+                NPCPos.row = nRow;
+                NPCPos.col = nCol;
+
+                isDirty = true;
+            }
+        
     }
+
     draw() {
 
         if (isDirty == false) {
