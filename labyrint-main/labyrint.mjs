@@ -55,7 +55,9 @@ const DOORS = {
 }
 
 let direction = -1;
-
+let levelChange = false;
+let previousLevel = null;
+let currentLevel = startingLevel;
 let items = [];
 
 const THINGS = [LOOT, EMPTY];
@@ -107,7 +109,7 @@ class Labyrinth {
             tCol = playerPos.col + (1 * dCol);
         }
 
-        
+            
         if (THINGS.includes(level[tRow][tCol])) { // Is there anything where Hero is moving to
             let currentItem = level[tRow][tCol];
             
@@ -117,40 +119,60 @@ class Labyrinth {
                 eventText = `Player gained ${loot}$`;
             }
 
-            
+            if (levelChange == true) {
+                level[playerPos.row][playerPos.col] = DOORS[previousLevel];
+                level[tRow][tCol] = HERO;
+                
+                playerPos.row = tRow;
+                playerPos.col = tCol;
+                
+                isDirty = true;    
+                levelChange = false;
 
-            
-            // Move the HERO
+            } else {
+
             level[playerPos.row][playerPos.col] = EMPTY;
             level[tRow][tCol] = HERO;
 
-            // Update the HERO
             playerPos.row = tRow;
             playerPos.col = tCol;
 
-            // Make the draw function draw.
             isDirty = true;
+            }
+
         } else {
             direction *= -1;
         }
 
         if (LEVEL_DOORS.includes(level[tRow][tCol])) {
             let currentDoor = level[tRow][tCol]
+            
+                if (currentDoor == DOORS.start) {
+                    levelData = readMapFile(levels[startingLevel]);
+                    level = levelData;
+                    resetPlayerPosition();
+                    previousLevel = currentLevel;
+                    currentLevel = startingLevel;
+                }
 
                 if (currentDoor == DOORS.aSharpPlace) {
                     levelData = readMapFile(levels[aSharpPlace]);
                     level = levelData;
                     resetPlayerPosition();
-                    isDirty = true;
+                    previousLevel = currentLevel;
+                    currentLevel = aSharpPlace;
                 }
 
                 if (currentDoor == DOORS.aScaryPlace) {
                     levelData = readMapFile(levels[aScaryPlace]);
                     level = levelData;
                     resetPlayerPosition();
-                    isDirty = true;
+                    previousLevel = currentLevel;
+                    currentLevel = aScaryPlace;
                 }
 
+                levelChange = true;
+                isDirty = true;
         }
 
         if (TELEPORTER.includes(level[tRow][tCol])) {
@@ -190,7 +212,10 @@ class Labyrinth {
         isDirty = false;
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-
+        console.log(levelChange);
+        console.log(levelChangeLogic);
+        console.log(currentLevel);
+        console.log(previousLevel);
         let rendering = "";
 
         rendering += renderHud();
