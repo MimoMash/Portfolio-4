@@ -58,7 +58,7 @@ const DOORS = {
     aSharpPlace: "⚁",
     aScaryPlace: "⚂",
     start_reentry: "⚃",
-    sharp_reentry: "⚄"
+    sharp_reentry: "⚄",
 }
 
 let direction = -1;
@@ -74,7 +74,6 @@ let isPatrolLimitReachedCol = false;
 let fullPatrolRow = false;
 let patrolCount = 0;
 let NPCPositions = [];
-let items = [];
 
 
 const THINGS = [LOOT, EMPTY];
@@ -262,13 +261,16 @@ class Labyrinth {
     if (LEVEL_DOORS.includes(level[tRow][tCol])) {
         let currentDoor = level[tRow][tCol]
 
-
             levelChanger(start_reentry);
-        
-            levelChanger(aSharpPlace);
-
+            
             levelChanger(aScaryPlace);
 
+            levelChanger(aSharpPlace);
+
+            if (previousLevel == aScaryPlace) {
+                levelChanger(sharp_reentry);
+            }
+            
             levelChange = true;
             isDirty = true;
 
@@ -292,7 +294,7 @@ class Labyrinth {
         isDirty = false;
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-        
+       
         let rendering = "";
 
         rendering += renderHud();
