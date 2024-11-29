@@ -212,10 +212,7 @@ class Labyrinth {
         isDirty = false;
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-        console.log(levelChange);
-        console.log(levelChangeLogic);
-        console.log(currentLevel);
-        console.log(previousLevel);
+        
         let rendering = "";
 
         rendering += renderHud();
