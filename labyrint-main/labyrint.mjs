@@ -64,11 +64,22 @@ let direction = -1;
 let levelChange = false;
 let previousLevel = null;
 let currentLevel = startingLevel;
+const maxPatrol = 4;
+const minPatrol = 0;
+let amountOfPatrolsRow = 2;
+let amountOfPatrolsCol = 2;
+let isPatrolLimitReachedRow = false;
+let isPatrolLimitReachedCol = false;
+let fullPatrolRow = false;
+let patrolCount = 0;
+let NPCPositions = [];
+let NPCAmount = 0;
 let items = [];
+
 
 const THINGS = [LOOT, EMPTY];
 const ENEMY_THINGS = [EMPTY];
-const TELEPORTER = [TELEPORT]
+const TELEPORTER = [TELEPORT];
 const LEVEL_DOORS = [DOORS.start, DOORS.aSharpPlace, DOORS.aScaryPlace]
 let eventText = "";
 
@@ -80,12 +91,17 @@ const playerStats = {
 }
 
 function findNPCOnMap() {
+    
     if (NPCPos.row == null) {
         for (let row = 0; row < level.length; row++) {
             for (let col = 0; col < level[row].length; col++) {
                 if (level[row][col] == NPC) {
-                    NPCPos.row = row;
-                    NPCPos.col = col;
+                    NPCAmount++
+                    NPCPositions[NPCAmount] = {
+                        NPCPosRow: row,
+                        NPCPosCol: col,
+                    }
+                    NPCPos.row = null;
                     break;
                 }
             }
@@ -96,14 +112,6 @@ function findNPCOnMap() {
     }
 }
 
-const maxPatrol = 4;
-const minPatrol = 0;
-let amountOfPatrolsRow = 2;
-let amountOfPatrolsCol = 2;
-let isPatrolLimitReachedRow = false;
-let isPatrolLimitReachedCol = false;
-let fullPatrolRow = false;
-let patrolCount = 0;
 
 class Labyrinth {
     
@@ -139,6 +147,18 @@ class Labyrinth {
             dRow = 0;
             tRow = playerPos.row + (1 * dRow);
             tCol = playerPos.col + (1 * dCol);
+        }   
+
+        function resetNPCPosition () {
+            NPCPos.row = null;
+            NPCPos.col = null;
+            nRow = null;
+            nCol = null;
+            findNPCOnMap();
+            xCol = 0;
+            xRow = 0;
+            nRow = NPCPos.row + (1 * xRow);
+            nCol = NPCPos.col + (1 * xCol);
         }
 
             
@@ -173,29 +193,6 @@ class Labyrinth {
 
         } else {
             direction *= -1;
-        }
-
-        if (LEVEL_DOORS.includes(level[tRow][tCol])) {
-            let currentDoor = level[tRow][tCol]
-            
-                levelChanger(startingLevel);
-            
-                levelChanger(aSharpPlace);
-
-                levelChanger(aScaryPlace);
-
-                levelChange = true;
-                isDirty = true;
-
-                function levelChanger(levelName) {
-                    if (currentDoor == DOORS[levelName]) {
-                        levelData = readMapFile(levels[levelName]);
-                        level = levelData;
-                        resetPlayerPosition();
-                        previousLevel = currentLevel;
-                        currentLevel = levelName;
-                    }
-                }
         }
 
         if (TELEPORTER.includes(level[tRow][tCol])) {
@@ -240,16 +237,15 @@ class Labyrinth {
             if (amountOfPatrolsRow <= maxPatrol && !isPatrolLimitReachedRow) {
                 xRow--
                 amountOfPatrolsRow++
-                patrolCount++
                 if (amountOfPatrolsRow == maxPatrol)
                     isPatrolLimitReachedRow = true;
             } else if (amountOfPatrolsRow >= minPatrol && isPatrolLimitReachedRow) {
                 xRow++
                 amountOfPatrolsRow--
-                patrolCount++
                 if (amountOfPatrolsRow == minPatrol)
                     isPatrolLimitReachedRow = false;
             } 
+            patrolCount++;
         }
 
         function NPCPatrolCol() {
@@ -261,16 +257,15 @@ class Labyrinth {
             if (amountOfPatrolsCol <= maxPatrol && !isPatrolLimitReachedCol) {
                 xCol--
                 amountOfPatrolsCol++
-                patrolCount++
                 if (amountOfPatrolsCol == maxPatrol)
                     isPatrolLimitReachedCol = true;
             } else if (amountOfPatrolsCol >= minPatrol && isPatrolLimitReachedCol) {
                 xCol++
                 amountOfPatrolsCol--
-                patrolCount++
                 if (amountOfPatrolsCol == minPatrol)
                     isPatrolLimitReachedCol = false;
             }   
+            patrolCount++;
         }
         
         if (fullPatrolRow == false) {
@@ -279,8 +274,17 @@ class Labyrinth {
             NPCPatrolCol();
         }
 
-        let nRow = NPCPos.row + (1 * xRow)
-        let nCol = NPCPos.col + (1 * xCol);
+        let nRow = [];
+        let nCol = [];
+
+        for (let i = 0; i < NPCAmount; i++) {
+            nRow[i] = {
+                nRow: NPCPositions[i].NPCPosRow + (1 * xRow)
+            }
+            nCol[i] = {
+                nCol: NPCPositions[i].NPCPosCol + (1 * xCol)
+            }
+        }
 
 
         if (ENEMY_THINGS.includes(level[nRow][nCol])) {
@@ -292,6 +296,29 @@ class Labyrinth {
             isDirty = true;       
         }
 
+    if (LEVEL_DOORS.includes(level[tRow][tCol])) {
+        let currentDoor = level[tRow][tCol]
+        
+            levelChanger(startingLevel);
+        
+            levelChanger(aSharpPlace);
+
+            levelChanger(aScaryPlace);
+
+            levelChange = true;
+            isDirty = true;
+
+            function levelChanger(levelName) {
+                if (currentDoor == DOORS[levelName]) {
+                    levelData = readMapFile(levels[levelName]);
+                    level = levelData;
+                    resetPlayerPosition();
+                    resetNPCPosition();
+                    previousLevel = currentLevel;
+                    currentLevel = levelName;
+                }
+            }
+        }
     }
 
     draw() {
