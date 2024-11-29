@@ -9,8 +9,8 @@ const DATA_DIR = "./data/";
 const START_LEVEL_ID = "start"
 const A_SHARP_PLACE_LEVEL_ID = "aSharpPlace"
 const A_SCARY_PLACE_LEVEL_ID = "aScaryPlace"
-const START_REENTRY_LEVEL_ID = "aSharpPlace_Reentry"
-const A_SHARP_PLACE_REENTRY_LEVEL_ID = "start_reentry"
+const START_REENTRY_LEVEL_ID = "start_reentry"
+const A_SHARP_PLACE_REENTRY_LEVEL_ID = "aSharpPlace_Reentry"
 
 // Scalar constants 
 const NEWLINE = "\n";
