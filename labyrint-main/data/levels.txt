@@ -1,3 +1,5 @@
 start:map1.txt
 aSharpPlace:sharp.txt
 aScaryPlace:scary.txt
+aSharpPlace_Reentry:sharp_reentry.txt
+start_reentry:start_reentry.txt
