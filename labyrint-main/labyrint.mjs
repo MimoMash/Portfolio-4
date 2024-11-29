@@ -44,11 +44,6 @@ let playerPos = {
     col: null,
 }
 
-let NPCPos = {
-    row: null,
-    col: null,
-}
-
 const EMPTY = " ";
 const HERO = "ⶆ";
 const LOOT = "$";
@@ -73,7 +68,6 @@ let isPatrolLimitReachedCol = false;
 let fullPatrolRow = false;
 let patrolCount = 0;
 let NPCPositions = [];
-let NPCAmount = 0;
 let items = [];
 
 
@@ -88,28 +82,6 @@ const HP_MAX = 10;
 const playerStats = {
     hp: 8,
     cash: 0
-}
-
-function findNPCOnMap() {
-    
-    if (NPCPos.row == null) {
-        for (let row = 0; row < level.length; row++) {
-            for (let col = 0; col < level[row].length; col++) {
-                if (level[row][col] == NPC) {
-                    NPCAmount++
-                    NPCPositions[NPCAmount] = {
-                        NPCPosRow: row,
-                        NPCPosCol: col,
-                    }
-                    NPCPos.row = null;
-                    break;
-                }
-            }
-            if (NPCPos.row != undefined) {
-                break;
-            }
-        }
-    }
 }
 
 
@@ -148,21 +120,8 @@ class Labyrinth {
             tRow = playerPos.row + (1 * dRow);
             tCol = playerPos.col + (1 * dCol);
         }   
-
-        function resetNPCPosition () {
-            NPCPos.row = null;
-            NPCPos.col = null;
-            nRow = null;
-            nCol = null;
-            findNPCOnMap();
-            xCol = 0;
-            xRow = 0;
-            nRow = NPCPos.row + (1 * xRow);
-            nCol = NPCPos.col + (1 * xCol);
-        }
-
-            
-        if (THINGS.includes(level[tRow][tCol])) { // Is there anything where Hero is moving to
+    
+        if (THINGS.includes(level[tRow][tCol])) { 
             let currentItem = level[tRow][tCol];
             
             if (currentItem == LOOT) {
@@ -274,26 +233,22 @@ class Labyrinth {
             NPCPatrolCol();
         }
 
-        let nRow = [];
-        let nCol = [];
-
-        for (let i = 0; i < NPCAmount; i++) {
-            nRow[i] = {
-                nRow: NPCPositions[i].NPCPosRow + (1 * xRow)
+    
+        for (let i = 0; i < NPCPositions.length; i++) {
+            let currentNPC = NPCPositions[i];
+            
+            let nRow = currentNPC.NPCPosRow + xRow;
+            let nCol = currentNPC.NPCPosCol + xCol;
+            
+            if (ENEMY_THINGS.includes(level[nRow][nCol])) {
+                
+                level[currentNPC.NPCPosRow][currentNPC.NPCPosCol] = EMPTY;
+                level[nRow][nCol] = NPC;
+                
+                NPCPositions[i] = { NPCPosRow: nRow, NPCPosCol: nCol };
+        
+                isDirty = true;
             }
-            nCol[i] = {
-                nCol: NPCPositions[i].NPCPosCol + (1 * xCol)
-            }
-        }
-
-
-        if (ENEMY_THINGS.includes(level[nRow][nCol])) {
-            level[NPCPos.row][NPCPos.col] = EMPTY;
-            level[nRow][nCol] = NPC;
-
-            NPCPos.row = nRow;
-            NPCPos.col = nCol;  
-            isDirty = true;       
         }
 
     if (LEVEL_DOORS.includes(level[tRow][tCol])) {
@@ -313,7 +268,6 @@ class Labyrinth {
                     levelData = readMapFile(levels[levelName]);
                     level = levelData;
                     resetPlayerPosition();
-                    resetNPCPosition();
                     previousLevel = currentLevel;
                     currentLevel = levelName;
                 }
@@ -329,7 +283,6 @@ class Labyrinth {
         isDirty = false;
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-        console.log(patrolCount);
         
         let rendering = "";
 
@@ -383,6 +336,20 @@ function findHeroOnMap() {
             }
             if (playerPos.row != undefined) {
                 break;
+            }
+        }
+    }
+}
+
+function findNPCOnMap() {
+    NPCPositions = [];
+    for (let row = 0; row < level.length; row++) {
+        for (let col = 0; col < level[row].length; col++) {
+            if (level[row][col] == NPC) {
+                NPCPositions.push({
+                    NPCPosRow: row,
+                    NPCPosCol: col,
+                });
             }
         }
     }
